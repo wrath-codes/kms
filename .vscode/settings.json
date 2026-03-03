@@ -1,0 +1,6 @@
+{
+  "terminal.integrated.automationProfile.osx": {
+    "path": "/bin/zsh",
+    "args": ["--login", "--interactive"]
+  }
+}

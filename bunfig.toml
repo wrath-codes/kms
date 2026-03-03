@@ -1,0 +1,6 @@
+[build]
+target = "node"
+format = "cjs"
+
+[test]
+timeout = 30000

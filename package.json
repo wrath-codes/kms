@@ -1,0 +1,38 @@
+{
+  "name": "kms",
+  "version": "0.1.0",
+  "description": "Knowledge Management System - VS Code Extension",
+  "scripts": {
+    "compile": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=* --sourcemap=linked",
+    "watch": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=* --sourcemap=inline --watch",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:unit:coverage": "vitest run --coverage",
+    "test:extension": "vscode-test",
+    "test:extension:watch": "vscode-test --watch",
+    "test": "npm run test:unit && npm run test:extension",
+    "pretest": "npm run compile",
+    "vscode:prepublish": "npm run compile"
+  },
+  "dependencies": {
+    "effect": "^3.16.0"
+  },
+  "devDependencies": {
+    "@effect/vitest": "^0.19.0",
+    "@types/bun": "latest",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.3.0",
+    "@types/vscode": "^1.100.0",
+    "@vscode/test-cli": "latest",
+    "@vscode/test-electron": "latest",
+    "bun-types": "latest",
+    "mocha": "^11.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^3.1.0",
+    "c8": "^10.0.0",
+    "vscode": "*"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  }
+}
