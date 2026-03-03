@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+bun.lock
+yarn.lock
+package-lock.json
+
+# Build output
+out/
+dist/
+*.js
+*.js.map
+!.vscode-test.mjs
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/settings.json
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.temp
