@@ -2,9 +2,122 @@
   "name": "kms",
   "version": "0.1.0",
   "description": "Knowledge Management System - VS Code Extension",
+  "main": "./out/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "kms.whichKey",
+        "title": "KMS: Which Key"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "kms.whichKey",
+        "key": "alt+space",
+        "mac": "alt+space",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "KMS",
+      "properties": {
+        "kms.bindings": {
+          "type": "array",
+          "description": "Which-key binding tree. Each entry is a key binding node — either a group (submenu) or a command (leaf).",
+          "default": [
+            {
+              "key": "f",
+              "name": "File",
+              "icon": "📄",
+              "bindings": [
+                { "key": "f", "name": "Save File", "command": "workbench.action.files.save" },
+                { "key": "s", "name": "Save All", "command": "workbench.action.files.saveAll" },
+                { "key": "r", "name": "Rename File", "command": "workbench.action.files.rename" }
+              ]
+            },
+            {
+              "key": "e",
+              "name": "Editor",
+              "icon": "✏️",
+              "bindings": [
+                { "key": "f", "name": "Format Document", "command": "editor.action.formatDocument" },
+                { "key": "/", "name": "Toggle Comment", "command": "editor.action.commentLine" },
+                { "key": "r", "name": "Rename Symbol", "command": "editor.action.rename" }
+              ]
+            },
+            {
+              "key": "g",
+              "name": "Go to",
+              "icon": "🔍",
+              "bindings": [
+                { "key": "d", "name": "Go to Definition", "command": "editor.action.revealDefinition" },
+                { "key": "r", "name": "Find References", "command": "editor.action.goToReferences" },
+                { "key": "i", "name": "Go to Implementation", "command": "editor.action.goToImplementation" }
+              ]
+            },
+            {
+              "key": "p",
+              "name": "Project",
+              "icon": "📁",
+              "bindings": [
+                { "key": "f", "name": "Quick Open File", "command": "workbench.action.quickOpen" },
+                { "key": "p", "name": "Command Palette", "command": "workbench.action.showCommands" }
+              ]
+            },
+            {
+              "key": "w",
+              "name": "Window",
+              "icon": "🪟",
+              "bindings": [
+                { "key": "v", "name": "Split Vertical", "command": "workbench.action.splitEditor" },
+                { "key": "h", "name": "Split Horizontal", "command": "workbench.action.splitEditorDown" },
+                { "key": "q", "name": "Close Editor", "command": "workbench.action.closeActiveEditor" }
+              ]
+            },
+            {
+              "key": "t",
+              "name": "Toggle",
+              "icon": "🔀",
+              "bindings": [
+                { "key": "s", "name": "Toggle Sidebar", "command": "workbench.action.toggleSidebarVisibility" },
+                { "key": "t", "name": "Toggle Terminal", "command": "workbench.action.terminal.toggleTerminal" },
+                { "key": "m", "name": "Toggle Minimap", "command": "editor.action.toggleMinimap" }
+              ]
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": { "type": "string", "description": "Single key to trigger this binding" },
+              "name": { "type": "string", "description": "Display name" },
+              "icon": { "type": "string", "description": "Icon character — emoji, nerd font glyph, or any UTF-8 character (optional, falls back to [key])" },
+              "command": { "type": "string", "description": "VS Code command to execute (leaf node)" },
+              "args": { "type": "array", "description": "Arguments to pass to the command (optional)" },
+              "bindings": { "type": "array", "description": "Child bindings (group node)" }
+            },
+            "required": ["key", "name"]
+          }
+        },
+        "kms.menus": {
+          "type": "object",
+          "description": "Named which-key menus. Each key is a menu ID, value has 'title' and 'bindings'. Use with keybindings: { \"command\": \"kms.whichKey\", \"args\": { \"menu\": \"myMenu\" } }",
+          "default": {},
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string", "description": "Menu title shown in breadcrumb" },
+              "bindings": { "type": "array", "description": "Binding tree for this menu" }
+            },
+            "required": ["title", "bindings"]
+          }
+        }
+      }
+    }
+  },
   "scripts": {
-    "compile": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=* --sourcemap=linked",
-    "watch": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=* --sourcemap=inline --watch",
+    "compile": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=vscode --sourcemap=linked && bun build src/worker/indexWorker.ts --outdir out/worker --target=node --format=cjs --sourcemap=linked",
+    "watch": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=vscode --sourcemap=inline --watch",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:unit:coverage": "vitest run --coverage",

@@ -60,9 +60,14 @@ export namespace workspace {
   export const onDidChangeConfiguration = new EventEmitter().event;
   export const workspaceFolders: any[] = [];
 
+  export const _configStore: Record<string, any> = {};
+
   export function getConfiguration(section?: string) {
     return {
-      get: (key: string, defaultValue?: any) => defaultValue,
+      get: (key: string, defaultValue?: any) => {
+        const fullKey = section ? `${section}.${key}` : key;
+        return fullKey in _configStore ? _configStore[fullKey] : defaultValue;
+      },
       update: async () => {},
     };
   }
@@ -87,16 +92,40 @@ export namespace window {
     return undefined;
   }
 
+  export async function showInformationMessage(msg: string) {
+    return undefined;
+  }
+
+  export async function showWarningMessage(msg: string) {
+    return undefined;
+  }
+
+  export let lastQuickPick: ReturnType<typeof createQuickPick> | null = null;
+
   export function createQuickPick() {
-    return {
+    const onDidAcceptEmitter = new EventEmitter();
+    const onDidHideEmitter = new EventEmitter();
+    const onDidChangeValueEmitter = new EventEmitter();
+    const qp = {
       show: () => {},
       hide: () => {},
       dispose: () => {},
-      onDidAccept: new EventEmitter().event,
-      onDidHide: new EventEmitter().event,
-      items: [],
+      onDidAccept: onDidAcceptEmitter.event,
+      onDidHide: onDidHideEmitter.event,
+      onDidChangeValue: onDidChangeValueEmitter.event,
+      items: [] as any[],
+      selectedItems: [] as any[],
       value: "",
+      placeholder: "",
+      title: undefined as string | undefined,
+      matchOnDescription: false,
+      matchOnDetail: false,
+      _onDidAcceptEmitter: onDidAcceptEmitter,
+      _onDidHideEmitter: onDidHideEmitter,
+      _onDidChangeValueEmitter: onDidChangeValueEmitter,
     };
+    lastQuickPick = qp;
+    return qp;
   }
 
   export const onDidChangeActiveTextEditor = new EventEmitter().event;
