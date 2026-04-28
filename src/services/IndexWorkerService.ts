@@ -11,6 +11,12 @@ export class IndexWorkerError extends Data.TaggedError("IndexWorkerError")<{
   readonly cause: unknown
 }> {}
 
+/**
+ * Index worker service for running inverted index operations in a worker thread.
+ * 
+ * Offloads expensive index building and searching to a worker to keep main thread responsive.
+ * Communicates via worker_threads RPC protocol.
+ */
 export class IndexWorkerService extends Context.Tag("IndexWorkerService")<
   IndexWorkerService,
   {

@@ -2,6 +2,12 @@ import { Context, Effect, Layer, Ref } from "effect";
 import { ContextValue } from "../domain/types";
 import { VscodeError, execSetContext } from "./VscodeEffect";
 
+/**
+ * Context service for managing VS Code context (when clauses).
+ * 
+ * Batches context changes into a pending map and flushes them in parallel
+ * to reduce IPC overhead. Caller must call `flushNow` to apply changes.
+ */
 export class ContextService extends Context.Tag("ContextService")<
   ContextService,
   {

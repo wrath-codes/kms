@@ -3,6 +3,12 @@ import { Effect, ManagedRuntime } from "effect"
 import { MainLayer } from "./layers/MainLayer"
 import { WhichKeyMenu } from "./ui/whichKeyMenu"
 
+// Log error with consistent formatting
+const logError = (context: string, error: unknown) => {
+  const msg = error instanceof Error ? error.message : String(error)
+  console.error(`[KMS:${context}] ${msg}`)
+}
+
 let runtime: ManagedRuntime.ManagedRuntime<
   ManagedRuntime.ManagedRuntime.Context<typeof MainLayer>,
   never
@@ -21,7 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
           const menu = yield* WhichKeyMenu
           yield* menu.show(args?.menu)
         })
-      ).catch((e) => console.error("[KMS] whichKey error:", e))
+      ).catch((e) => logError("whichKey", e))
     }),
   )
 

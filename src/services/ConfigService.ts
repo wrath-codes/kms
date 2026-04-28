@@ -2,6 +2,12 @@ import * as vscode from "vscode"
 import { Context, Effect, Layer, Ref } from "effect"
 import { ConfigSnapshot } from "../domain/types"
 
+/**
+ * Configuration service for KMS settings.
+ * 
+ * Caches VS Code workspace configuration with version tracking.
+ * Configuration is invalidated on `onDidChangeConfiguration` events.
+ */
 export class ConfigService extends Context.Tag("ConfigService")<
   ConfigService,
   {

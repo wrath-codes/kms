@@ -6,6 +6,12 @@ import { tokenize, RegistryService } from "./RegistryService"
 // Service Interface
 // ---------------------------------------------------------------------------
 
+/**
+ * Full-text search service for command registry.
+ * 
+ * Supports fast querying with scoring-based ranking.
+ * Uses tokenization and fuzzy matching to find relevant commands.
+ */
 export class SearchService extends Context.Tag("SearchService")<
   SearchService,
   {

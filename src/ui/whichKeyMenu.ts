@@ -199,7 +199,10 @@ export const WhichKeyMenuLive = Layer.effect(
               yield* contextService.set("kms.active", false)
               yield* contextService.flushNow
             })
-          ).catch((e) => console.error("[KMS] Cleanup error:", e))
+          ).catch((e) => {
+            const msg = e instanceof Error ? e.message : String(e)
+            console.error(`[KMS:cleanup] ${msg}`)
+          })
           valueDisposable.dispose()
           acceptDisposable.dispose()
           hideDisposable.dispose()

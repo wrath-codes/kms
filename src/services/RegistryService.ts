@@ -17,6 +17,12 @@ export const tokenize = (text: string): readonly string[] =>
 // Service Interface
 // ---------------------------------------------------------------------------
 
+/**
+ * Command registry service.
+ * 
+ * Maintains an in-memory snapshot of commands and groups with version tracking.
+ * Provides tokenization for search queries.
+ */
 export class RegistryService extends Context.Tag("RegistryService")<
   RegistryService,
   {

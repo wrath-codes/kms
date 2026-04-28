@@ -52,6 +52,11 @@ export const tokenize = (text: string): string[] =>
 export const buildIndex = (
   commands: { id: string; label: string }[]
 ): InvertedIndex => {
+  // Validate input
+  if (commands.some((cmd) => !cmd.id || !cmd.label)) {
+    throw new Error("All commands must have non-empty id and label")
+  }
+
   const documents: IndexedDocument[] = new Array(commands.length)
   const postings = new Map<string, PostingEntry[]>()
   let totalTokens = 0

@@ -1,6 +1,12 @@
 import { Context, Effect, Layer, Queue } from "effect"
 import { DispatchAction } from "../domain/types"
 
+/**
+ * Dispatch queue service for UI state management.
+ * 
+ * Queues and processes dispatch actions sequentially to ensure consistent state updates.
+ * Subscribers are notified of each action in order.
+ */
 export class DispatchQueueService extends Context.Tag("DispatchQueueService")<
   DispatchQueueService,
   {
