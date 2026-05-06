@@ -50,6 +50,30 @@ it.layer(TestLayer)("WhichKeyMenu", (it) => {
     })
   )
 
+  it.effect("renders icons in binding labels", () =>
+    Effect.gen(function* () {
+      const menu = yield* WhichKeyMenu
+      yield* menu.show()
+
+      const qp = vscodeShim.window.lastQuickPick!
+      // First item (File) has icon "file"
+      expect(qp.items[0].label).toContain("file")
+      expect(qp.items[0].label).toContain("[f]")
+    })
+  )
+
+  it.effect("renders fallback dot for missing icons", () =>
+    Effect.gen(function* () {
+      const menu = yield* WhichKeyMenu
+      yield* menu.show()
+
+      const qp = vscodeShim.window.lastQuickPick!
+      // Second item (Editor) has no icon, should render "•"
+      expect(qp.items[1].label).toContain("•")
+      expect(qp.items[1].label).toContain("[e]")
+    })
+  )
+
   it.effect("typing a group key navigates into submenu", () =>
     Effect.gen(function* () {
       const menu = yield* WhichKeyMenu

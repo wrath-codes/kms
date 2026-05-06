@@ -15,6 +15,7 @@ export const toRenderItem = (result: SearchResult): RenderItem =>
       : result.command.label,
     description: result.command.category,
     detail: result.command.description,
+    icon: result.command.icon,
     command: result.command,
   })
 

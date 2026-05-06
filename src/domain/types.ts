@@ -18,6 +18,13 @@ export class Command extends Data.Class<{
   readonly category: string | undefined
   readonly keybinding: string | undefined
   readonly when: string | undefined
+  /**
+   * Optional Nerd Font icon (e.g., "", "", "").
+   * Displays in which-key menus and search results.
+   * If omitted, defaults to "•" (larger dot).
+   * See README for Nerd Font icon reference.
+   */
+  readonly icon: string | undefined
 }> {}
 
 export class CommandGroup extends Data.Class<{
@@ -48,6 +55,12 @@ export class RenderItem extends Data.Class<{
   readonly label: string
   readonly description: string | undefined
   readonly detail: string | undefined
+  /**
+   * Optional Nerd Font icon from the command.
+   * If present, prefixes the label in UI display.
+   * If omitted, defaults to "•" (larger dot).
+   */
+  readonly icon: string | undefined
   readonly command: Command
 }> {}
 

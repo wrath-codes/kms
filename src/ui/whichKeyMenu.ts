@@ -43,7 +43,8 @@ const parseBindings = (raw: unknown): BindingNode[] => {
 
 const renderLevel = (nodes: readonly BindingNode[]): WhichKeyItem[] =>
   nodes.map((node) => {
-    const prefix = node.icon ? `${node.icon} [${node.key}]` : `[${node.key}]`
+    const icon = node.icon ? `${node.icon} ` : "• "
+    const prefix = `${icon}[${node.key}]`
     const isGroup = node instanceof BindingGroup
     return {
       label: `${prefix}  ${node.name}`,

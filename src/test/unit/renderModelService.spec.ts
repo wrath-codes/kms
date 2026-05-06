@@ -4,7 +4,7 @@ import { Effect } from "effect"
 import { toRenderItem, RenderModelService, RenderModelServiceLive, PAGE_SIZE } from "../../services/RenderModelService"
 import { Command, CommandId, SearchResult, MatchRange } from "../../domain/types"
 
-const makeCommand = (label: string, opts?: { keybinding?: string; category?: string; description?: string }) =>
+const makeCommand = (label: string, opts?: { keybinding?: string; category?: string; description?: string; icon?: string }) =>
   new Command({
     id: CommandId(`test.${label.toLowerCase().replace(/\s/g, "")}`),
     label,
@@ -12,6 +12,7 @@ const makeCommand = (label: string, opts?: { keybinding?: string; category?: str
     category: opts?.category,
     keybinding: opts?.keybinding,
     when: undefined,
+    icon: opts?.icon,
   })
 
 const makeResult = (label: string, score: number, opts?: { keybinding?: string; category?: string }) =>
@@ -38,6 +39,19 @@ describe("toRenderItem", () => {
     const result = makeResult("Format", 1, { category: "Editor" })
     const item = toRenderItem(result)
     expect(item.description).toBe("Editor")
+  })
+
+  it("includes icon from command", () => {
+    const cmd = makeCommand("Save", { icon: "" })
+    const result = new SearchResult({ command: cmd, score: 1, matches: [] })
+    const item = toRenderItem(result)
+    expect(item.icon).toBe("")
+  })
+
+  it("handles missing icon", () => {
+    const result = makeResult("Open", 1)
+    const item = toRenderItem(result)
+    expect(item.icon).toBeUndefined()
   })
 })
 
