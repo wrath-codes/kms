@@ -3,6 +3,7 @@ import { Context, Effect, Layer } from "effect"
 import { BindingGroup, BindingLeaf, type BindingNode } from "../domain/types"
 import { ContextService } from "../services/ContextService"
 import { CommandService } from "../services/CommandService"
+import { formatIconPrefix } from "../services/RenderModelService"
 
 // ---------------------------------------------------------------------------
 // QuickPick item carrying a binding node
@@ -16,6 +17,13 @@ interface WhichKeyItem extends vscode.QuickPickItem {
 // Parse raw JSON from settings into typed BindingNode[]
 // ---------------------------------------------------------------------------
 
+/**
+ * Validate and parse icon string.
+ * Only accepts non-empty strings; filters out invalid types and empty strings.
+ */
+const parseIcon = (value: unknown): string | undefined =>
+  typeof value === "string" && value.trim() ? value.trim() : undefined
+
 const parseBindings = (raw: unknown): BindingNode[] => {
   if (!Array.isArray(raw)) return []
   return raw.map((entry: any): BindingNode => {
@@ -23,14 +31,14 @@ const parseBindings = (raw: unknown): BindingNode[] => {
       return new BindingGroup({
         key: String(entry.key ?? ""),
         name: String(entry.name ?? ""),
-        icon: entry.icon ?? undefined,
+        icon: parseIcon(entry.icon),
         bindings: parseBindings(entry.bindings),
       })
     }
     return new BindingLeaf({
       key: String(entry.key ?? ""),
       name: String(entry.name ?? ""),
-      icon: entry.icon ?? undefined,
+      icon: parseIcon(entry.icon),
       command: String(entry.command ?? ""),
       args: entry.args ?? undefined,
     })
@@ -43,8 +51,8 @@ const parseBindings = (raw: unknown): BindingNode[] => {
 
 const renderLevel = (nodes: readonly BindingNode[]): WhichKeyItem[] =>
   nodes.map((node) => {
-    const icon = node.icon ? `${node.icon} ` : "• "
-    const prefix = `${icon}[${node.key}]`
+    const iconPrefix = formatIconPrefix(node.icon)
+    const prefix = `${iconPrefix}[${node.key}]`
     const isGroup = node instanceof BindingGroup
     return {
       label: `${prefix}  ${node.name}`,

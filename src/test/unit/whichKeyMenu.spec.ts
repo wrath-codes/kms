@@ -156,4 +156,40 @@ it.layer(TestLayer)("WhichKeyMenu", (it) => {
       yield* Effect.promise(() => new Promise((r) => setTimeout(r, 20)))
     })
   )
+
+  it.effect("ignores non-string icons in bindings", () =>
+    Effect.gen(function* () {
+      const menu = yield* WhichKeyMenu
+      // Set bindings with invalid icon types (number, boolean, object)
+      vscodeShim.workspace._configStore["kms.bindings"] = [
+        { key: "f", name: "File", icon: 123, command: "cmd1" },
+        { key: "s", name: "Search", icon: true, command: "cmd2" },
+        { key: "e", name: "Edit", icon: {}, command: "cmd3" },
+        { key: "p", name: "Project", icon: "󰊢", command: "cmd4" },
+      ]
+
+      yield* menu.show()
+
+      const qp = vscodeShim.window.lastQuickPick!
+      // First three items should use fallback dot; fourth should use icon
+      expect(qp.items[0].label).toContain("•")
+      expect(qp.items[1].label).toContain("•")
+      expect(qp.items[2].label).toContain("•")
+      expect(qp.items[3].label).toContain("󰊢")
+    })
+  )
+
+  it.effect("trims whitespace from icons in bindings", () =>
+    Effect.gen(function* () {
+      const menu = yield* WhichKeyMenu
+      vscodeShim.workspace._configStore["kms.bindings"] = [
+        { key: "f", name: "File", icon: "  󰊢  ", command: "cmd1" },
+      ]
+
+      yield* menu.show()
+
+      const qp = vscodeShim.window.lastQuickPick!
+      expect(qp.items[0].label).toContain("󰊢")
+    })
+  )
 })

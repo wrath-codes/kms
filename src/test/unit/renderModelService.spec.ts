@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { it as effectIt } from "@effect/vitest"
 import { Effect } from "effect"
-import { toRenderItem, RenderModelService, RenderModelServiceLive, PAGE_SIZE } from "../../services/RenderModelService"
+import { toRenderItem, toQuickPickItem, formatIconPrefix, RenderModelService, RenderModelServiceLive, PAGE_SIZE } from "../../services/RenderModelService"
 import { Command, CommandId, SearchResult, MatchRange } from "../../domain/types"
 
 const makeCommand = (label: string, opts?: { keybinding?: string; category?: string; description?: string; icon?: string }) =>
@@ -21,6 +21,28 @@ const makeResult = (label: string, score: number, opts?: { keybinding?: string; 
     score,
     matches: [],
   })
+
+describe("formatIconPrefix", () => {
+  it("formats icon with trailing space", () => {
+    expect(formatIconPrefix("󰊢")).toBe("󰊢 ")
+  })
+
+  it("returns fallback dot when icon undefined", () => {
+    expect(formatIconPrefix(undefined)).toBe("• ")
+  })
+
+  it("returns fallback dot when icon is empty string", () => {
+    expect(formatIconPrefix("")).toBe("• ")
+  })
+
+  it("trims whitespace and returns fallback if only whitespace", () => {
+    expect(formatIconPrefix("   ")).toBe("• ")
+  })
+
+  it("trims icon and adds space", () => {
+    expect(formatIconPrefix("  󰊢  ")).toBe("󰊢 ")
+  })
+})
 
 describe("toRenderItem", () => {
   it("renders basic command", () => {
@@ -42,16 +64,38 @@ describe("toRenderItem", () => {
   })
 
   it("includes icon from command", () => {
-    const cmd = makeCommand("Save", { icon: "" })
+    const cmd = makeCommand("Save", { icon: "󰊢" })
     const result = new SearchResult({ command: cmd, score: 1, matches: [] })
     const item = toRenderItem(result)
-    expect(item.icon).toBe("")
+    expect(item.icon).toBe("󰊢")
   })
 
   it("handles missing icon", () => {
     const result = makeResult("Open", 1)
     const item = toRenderItem(result)
     expect(item.icon).toBeUndefined()
+  })
+})
+
+describe("toQuickPickItem", () => {
+  it("renders item with icon prefix", () => {
+    const item = toRenderItem(makeResult("Save", 1, { icon: "󰊢" }))
+    const qpItem = toQuickPickItem(item)
+    expect(qpItem.label).toBe("󰊢 Save")
+  })
+
+  it("renders item with fallback dot when no icon", () => {
+    const item = toRenderItem(makeResult("Open", 1))
+    const qpItem = toQuickPickItem(item)
+    expect(qpItem.label).toBe("• Open")
+  })
+
+  it("preserves description and detail", () => {
+    const result = makeResult("Format", 1, { category: "Editor" })
+    const item = toRenderItem(result)
+    const qpItem = toQuickPickItem(item)
+    expect(qpItem.description).toBe("Editor")
+    expect(qpItem.detail).toBe(undefined)
   })
 })
 

@@ -49,9 +49,9 @@ Icons make your menus more visually appealing and scannable. KMS uses **Nerd Fon
 1. **Install a Nerd Font** on your system:
    - Download from [Nerd Fonts](https://www.nerdfonts.com)
    - Install the font and set it as your terminal/editor font
-   - Common choices: Fira Code, Hack, FiraCode Nerd Font
+   - Common choices: Fira Code Nerd Font, Hack Nerd Font, JetBrains Mono Nerd Font
 
-2. **Add icons to your bindings** in VS Code settings:
+2. **Add icons to your bindings and commands** in VS Code settings:
 
 ```json
 {
@@ -59,12 +59,23 @@ Icons make your menus more visually appealing and scannable. KMS uses **Nerd Fon
     {
       "key": "f",
       "name": "File",
-      "icon": ""
+      "icon": "󰊢",
+      "bindings": [
+        { "key": "s", "name": "Save", "command": "workbench.action.files.save" }
+      ]
+    },
+    {
+      "key": "e",
+      "name": "Edit",
+      "icon": "󰏫",
+      "bindings": [
+        { "key": "f", "name": "Format", "command": "editor.action.formatDocument" }
+      ]
     },
     {
       "key": "s",
       "name": "Search",
-      "icon": "🔍"
+      "command": "workbench.action.findInFiles"
     }
   ]
 }
@@ -74,22 +85,22 @@ Icons make your menus more visually appealing and scannable. KMS uses **Nerd Fon
 
 Copy any of these icons into your bindings. See [Nerd Fonts Cheat Sheet](https://www.nerdfonts.com/cheat-sheet) for 10,000+ more icons.
 
-| Icon | Name | Use Case |
-|------|------|----------|
-|  | File | File operations (create, open, save, delete) |
-|  | Search | Search/find commands |
-|  | Settings | Configuration/preferences |
-|  | Build | Build/compile/make commands |
-|  | Terminal | Shell/terminal/command execution |
-|  | Git | Version control/git commands |
-|  | Comment | Documentation/comments |
-|  | Folder | Directory/workspace operations |
-| 󰎬 | Debug | Debug/testing/breakpoints |
-|  | Package | Dependencies/package manager |
-|  | Zap | Performance/optimization |
-|  | Info | Help/information |
-|  | X | Close/delete |
-|  | Check | Confirm/done/success |
+| Icon | Nerd Font Code | Use Case |
+|------|---|----------|
+| 󰊢 | `󰊢` | File operations (create, open, save, delete) |
+| 󰍉 | `󰍉` | Search/find commands |
+| 󰒓 | `󰒓` | Settings/configuration/preferences |
+| 󰔨 | `󰔨` | Build/compile/make commands |
+| 󰆍 | `󰆍` | Shell/terminal/command execution |
+| 󰊢 | `󰊢` | Git/version control |
+| 󰅲 | `󰅲` | Documentation/comments |
+| 󰉋 | `󰉋` | Directory/workspace operations |
+| 󰃤 | `󰃤` | Debug/testing/breakpoints |
+| 󰏓 | `󰏓` | Dependencies/package manager |
+| 󰚀 | `󰚀` | Performance/optimization |
+| 󰋽 | `󰋽` | Help/information/docs |
+| 󰅙 | `󰅙` | Close/delete/exit |
+| 󰄬 | `󰄬` | Confirm/done/success |
 
 ### Icon Fallback
 
@@ -99,9 +110,10 @@ If no icon is specified, KMS displays `•` (larger dot) as a fallback:
 {
   "key": "e",
   "name": "Edit"
-  // No icon → displays as "•  [e]  Edit"
 }
 ```
+
+Result: `•  [e]  Edit` in the menu.
 
 ## Usage
 

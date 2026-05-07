@@ -5,6 +5,21 @@ import { RenderItem, RenderModel, SearchResult } from "../domain/types"
 export const PAGE_SIZE = 200
 
 // ---------------------------------------------------------------------------
+// Icon Formatting (pure, exported for testing)
+// ---------------------------------------------------------------------------
+
+/**
+ * Format icon prefix for display.
+ * Returns icon with trailing space if present and non-empty, otherwise fallback dot.
+ * @param icon - Optional icon string from command or binding
+ * @returns Formatted icon prefix (e.g., "󰊢 ", "🔍 ", or "• ")
+ */
+export const formatIconPrefix = (icon?: string): string => {
+  const trimmed = icon?.trim()
+  return trimmed ? `${trimmed} ` : "• "
+}
+
+// ---------------------------------------------------------------------------
 // toRenderItem (pure, exported for testing)
 // ---------------------------------------------------------------------------
 
@@ -18,6 +33,22 @@ export const toRenderItem = (result: SearchResult): RenderItem =>
     icon: result.command.icon,
     command: result.command,
   })
+
+// ---------------------------------------------------------------------------
+// toQuickPickItem (pure, exported for testing)
+// ---------------------------------------------------------------------------
+
+/**
+ * Convert RenderItem to vscode.QuickPickItem with icon rendering.
+ * Prefixes label with icon or fallback dot, ensuring consistent display.
+ * @param item - Render item from search results
+ * @returns Quick pick item with formatted icon + label
+ */
+export const toQuickPickItem = (item: RenderItem) => ({
+  label: `${formatIconPrefix(item.icon)}${item.label}`,
+  description: item.description,
+  detail: item.detail,
+})
 
 // ---------------------------------------------------------------------------
 // Service Interface

@@ -19,10 +19,11 @@ export class Command extends Data.Class<{
   readonly keybinding: string | undefined
   readonly when: string | undefined
   /**
-   * Optional Nerd Font icon (e.g., "", "", "").
-   * Displays in which-key menus and search results.
+   * Optional Nerd Font icon (e.g., "󰊢", "󰍉", "󰅩").
+   * Displays in search results and quick-pick menus.
    * If omitted, defaults to "•" (larger dot).
-   * See README for Nerd Font icon reference.
+   * See README for Nerd Font icon setup and reference table.
+   * Icons must be registered when adding commands to the registry.
    */
   readonly icon: string | undefined
 }> {}
@@ -57,8 +58,10 @@ export class RenderItem extends Data.Class<{
   readonly detail: string | undefined
   /**
    * Optional Nerd Font icon from the command.
-   * If present, prefixes the label in UI display.
-   * If omitted, defaults to "•" (larger dot).
+   * Passed through from Command.icon for consistent rendering.
+   * If present, UI layer prefixes the label with icon + space.
+   * If omitted, UI defaults to "•" (larger dot).
+   * See RenderModelService.toQuickPickItem for display formatting.
    */
   readonly icon: string | undefined
   readonly command: Command
