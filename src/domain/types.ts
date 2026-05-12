@@ -19,10 +19,16 @@ export class Command extends Data.Class<{
   readonly keybinding: string | undefined
   readonly when: string | undefined
   /**
-   * Optional Nerd Font icon (e.g., "󰊢", "󰍉", "󰅩").
+   * Optional icon identifier (Nerd Font glyph, VS Code codicon, or custom).
+   * 
+   * Examples:
+   * - Nerd Font: "󰊢" (glyph directly)
+   * - VS Code codicons: "$(check)" or "check"
+   * - Custom source: "custom:my-icon"
+   * 
+   * Resolution order: Codicons → Nerd Fonts → Custom → Fallback (•)
+   * Set depends on IconService configuration (see README Phase 2a).
    * Displays in search results and quick-pick menus.
-   * If omitted, defaults to "•" (larger dot).
-   * See README for Nerd Font icon setup and reference table.
    * Icons must be registered when adding commands to the registry.
    */
   readonly icon: string | undefined
@@ -53,18 +59,24 @@ export class SearchResult extends Data.Class<{
 }> {}
 
 export class RenderItem extends Data.Class<{
-  readonly label: string
-  readonly description: string | undefined
-  readonly detail: string | undefined
-  /**
-   * Optional Nerd Font icon from the command.
-   * Passed through from Command.icon for consistent rendering.
-   * If present, UI layer prefixes the label with icon + space.
-   * If omitted, UI defaults to "•" (larger dot).
-   * See RenderModelService.toQuickPickItem for display formatting.
-   */
-  readonly icon: string | undefined
-  readonly command: Command
+   readonly label: string
+   readonly description: string | undefined
+   readonly detail: string | undefined
+   /**
+    * Optional icon identifier from the command.
+    * Passed through from Command.icon for consistent rendering.
+    * 
+    * Supports multiple icon sources:
+    * - Nerd Font glyphs: "󰊢"
+    * - VS Code codicons: "$(check)" or "check"
+    * - Custom sources: "custom:my-icon"
+    * 
+    * UI layer resolves via IconService with fallback chain.
+    * If omitted, IconService defaults to "•" (fallback dot).
+    * See RenderModelService.toQuickPickItem for display formatting.
+    */
+   readonly icon: string | undefined
+   readonly command: Command
 }> {}
 
 export class RenderModel extends Data.Class<{

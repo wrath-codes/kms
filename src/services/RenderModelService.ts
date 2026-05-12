@@ -1,23 +1,9 @@
 import { Context, Effect, Layer, Ref } from "effect"
 import { RenderItem, RenderModel, SearchResult } from "../domain/types"
+import { IconService } from "./IconService"
 
 // Render 200 items per page. Balances render latency (<5ms) vs scrolling burden
 export const PAGE_SIZE = 200
-
-// ---------------------------------------------------------------------------
-// Icon Formatting (pure, exported for testing)
-// ---------------------------------------------------------------------------
-
-/**
- * Format icon prefix for display.
- * Returns icon with trailing space if present and non-empty, otherwise fallback dot.
- * @param icon - Optional icon string from command or binding
- * @returns Formatted icon prefix (e.g., "󰊢 ", "🔍 ", or "• ")
- */
-export const formatIconPrefix = (icon?: string): string => {
-  const trimmed = icon?.trim()
-  return trimmed ? `${trimmed} ` : "• "
-}
 
 // ---------------------------------------------------------------------------
 // toRenderItem (pure, exported for testing)
@@ -40,12 +26,13 @@ export const toRenderItem = (result: SearchResult): RenderItem =>
 
 /**
  * Convert RenderItem to vscode.QuickPickItem with icon rendering.
- * Prefixes label with icon or fallback dot, ensuring consistent display.
+ * Prefixes label with icon from IconResult, ensuring consistent display.
  * @param item - Render item from search results
+ * @param icon - Resolved icon string (from IconService)
  * @returns Quick pick item with formatted icon + label
  */
-export const toQuickPickItem = (item: RenderItem) => ({
-  label: `${formatIconPrefix(item.icon)}${item.label}`,
+export const toQuickPickItem = (item: RenderItem, icon: string) => ({
+  label: `${icon} ${item.label}`,
   description: item.description,
   detail: item.detail,
 })

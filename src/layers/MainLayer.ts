@@ -6,6 +6,7 @@ import { SearchServiceLive } from "../services/SearchService"
 import { CommandServiceLive } from "../services/CommandService"
 import { RenderModelServiceLive } from "../services/RenderModelService"
 import { DispatchQueueServiceLive } from "../services/DispatchQueue"
+import { IconServiceLive } from "../services/IconService"
 import { WhichKeyMenuLive } from "../ui/whichKeyMenu"
 
 const ServicesLayer = Layer.mergeAll(
@@ -15,13 +16,14 @@ const ServicesLayer = Layer.mergeAll(
   CommandServiceLive,
   RenderModelServiceLive,
   DispatchQueueServiceLive,
+  IconServiceLive,
 )
 
 const SearchLayer = SearchServiceLive.pipe(Layer.provide(RegistryServiceLive))
 
 const CoreLayer = Layer.mergeAll(ServicesLayer, SearchLayer)
 
-const MenuDeps = Layer.mergeAll(ContextServiceLive, CommandServiceLive)
+const MenuDeps = Layer.mergeAll(ContextServiceLive, CommandServiceLive, IconServiceLive)
 
 export const MainLayer = Layer.mergeAll(
   CoreLayer,

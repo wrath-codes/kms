@@ -1,13 +1,30 @@
 import { describe, expect, beforeEach } from "vitest"
 import { it } from "@effect/vitest"
-import { Effect, Layer } from "effect"
+import { Effect, Layer, ManagedRuntime } from "effect"
 import { WhichKeyMenu, WhichKeyMenuLive } from "../../ui/whichKeyMenu"
 import { ContextServiceLive } from "../../services/ContextService"
 import { CommandServiceLive } from "../../services/CommandService"
+import { IconService, IconServiceLive } from "../../services/IconService"
+import { CodiconsSource } from "../../services/iconSources/CodiconsSource"
+import { NerdFontsSource } from "../../services/iconSources/NerdFontsSource"
 import * as vscodeShim from "../shims/vscodeShim"
 
-const MenuDeps = Layer.mergeAll(ContextServiceLive, CommandServiceLive)
+const MenuDeps = Layer.mergeAll(ContextServiceLive, CommandServiceLive, IconServiceLive)
 const TestLayer = WhichKeyMenuLive.pipe(Layer.provide(MenuDeps))
+
+// Initialize icon sources in tests
+let testRuntime: ManagedRuntime.ManagedRuntime<any, any> | null = null
+
+const initializeIconSources = () => {
+  testRuntime = ManagedRuntime.make(IconServiceLive)
+  return testRuntime.runPromise(
+    Effect.gen(function* () {
+      const iconService = yield* IconService
+      yield* iconService.register(CodiconsSource)
+      yield* iconService.register(NerdFontsSource)
+    })
+  )
+}
 
 const testBindings = [
   {
@@ -30,9 +47,10 @@ const testBindings = [
 ]
 
 it.layer(TestLayer)("WhichKeyMenu", (it) => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vscodeShim.workspace._configStore["kms.bindings"] = testBindings
     vscodeShim.window.lastQuickPick = null
+    await initializeIconSources()
   })
 
   it.effect("show opens QuickPick with root bindings", () =>

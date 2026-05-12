@@ -2,6 +2,7 @@ import * as vscode from "vscode"
 import { Effect, ManagedRuntime } from "effect"
 import { MainLayer } from "./layers/MainLayer"
 import { WhichKeyMenu } from "./ui/whichKeyMenu"
+import { initializeDefaultIconSources } from "./services/iconSources"
 
 // Log error with consistent formatting
 const logError = (context: string, error: unknown) => {
@@ -18,6 +19,9 @@ export async function activate(context: vscode.ExtensionContext) {
   console.log("[KMS] Activating...")
 
   runtime = ManagedRuntime.make(MainLayer)
+
+  // Initialize icon sources (codicons, nerd fonts, etc.)
+  runtime.runPromise(initializeDefaultIconSources).catch((e) => logError("initializeIconSources", e))
 
   context.subscriptions.push(
     vscode.commands.registerCommand("kms.whichKey", (args?: { menu?: string }) => {

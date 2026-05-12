@@ -3,7 +3,7 @@ import { Context, Effect, Layer } from "effect"
 import { BindingGroup, BindingLeaf, type BindingNode } from "../domain/types"
 import { ContextService } from "../services/ContextService"
 import { CommandService } from "../services/CommandService"
-import { formatIconPrefix } from "../services/RenderModelService"
+import { IconService } from "../services/IconService"
 
 // ---------------------------------------------------------------------------
 // QuickPick item carrying a binding node
@@ -49,16 +49,25 @@ const parseBindings = (raw: unknown): BindingNode[] => {
 // Render a level of the binding tree as QuickPick items
 // ---------------------------------------------------------------------------
 
-const renderLevel = (nodes: readonly BindingNode[]): WhichKeyItem[] =>
-  nodes.map((node) => {
-    const iconPrefix = formatIconPrefix(node.icon)
-    const prefix = `${iconPrefix}[${node.key}]`
-    const isGroup = node instanceof BindingGroup
-    return {
-      label: `${prefix}  ${node.name}`,
-      description: isGroup ? "→" : undefined,
-      node,
+const renderLevel = (
+  nodes: readonly BindingNode[],
+  iconService: ReturnType<typeof IconService.of>
+): Effect.Effect<WhichKeyItem[]> =>
+  Effect.gen(function* () {
+    const items: WhichKeyItem[] = []
+
+    for (const node of nodes) {
+      const iconResult = yield* iconService.resolve(node.icon ?? "")
+      const prefix = `${iconResult.icon} [${node.key}]`
+      const isGroup = node instanceof BindingGroup
+      items.push({
+        label: `${prefix}  ${node.name}`,
+        description: isGroup ? "→" : undefined,
+        node,
+      })
     }
+
+    return items
   })
 
 // ---------------------------------------------------------------------------
@@ -77,6 +86,7 @@ export const WhichKeyMenuLive = Layer.effect(
   Effect.gen(function* () {
     const contextService = yield* ContextService
     const commandService = yield* CommandService
+    const iconService = yield* IconService
 
     const show = (menuId?: string) =>
       Effect.gen(function* () {
@@ -120,18 +130,21 @@ export const WhichKeyMenuLive = Layer.effect(
         qp.matchOnDescription = false
         qp.matchOnDetail = false
 
-        const renderCurrent = () => {
+        const renderCurrent = Effect.gen(function* () {
           const breadcrumb = stack.map((s) => s.title).concat(currentTitle).join(" › ")
           qp.title = breadcrumb
-          qp.items = renderLevel(currentNodes)
+          const items = yield* renderLevel(currentNodes, iconService)
+          qp.items = items
           qp.value = ""
-        }
+        })
 
         const navigateTo = (group: BindingGroup) => {
           stack.push({ title: currentTitle, nodes: currentNodes })
           currentTitle = group.name
           currentNodes = group.bindings
-          renderCurrent()
+          Effect.runPromise(renderCurrent).catch((e) =>
+            console.error("[KMS] renderCurrent error:", e)
+          )
         }
 
         const goBack = (): boolean => {
@@ -139,7 +152,9 @@ export const WhichKeyMenuLive = Layer.effect(
           if (!parent) return false
           currentTitle = parent.title
           currentNodes = parent.nodes
-          renderCurrent()
+          Effect.runPromise(renderCurrent).catch((e) =>
+            console.error("[KMS] renderCurrent error:", e)
+          )
           return true
         }
 
@@ -151,7 +166,7 @@ export const WhichKeyMenuLive = Layer.effect(
           ).catch((e) => console.error("[KMS] Command error:", e))
         }
 
-        renderCurrent()
+        yield* renderCurrent
 
         // We detect backspace by checking if the value becomes empty
         // while we are inside a submenu (stack.length > 0).

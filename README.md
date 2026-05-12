@@ -5,7 +5,7 @@ A lightweight, high-performance which-key menu extension for VS Code.
 ## Features
 
 - **Hierarchical Navigation** — Unlimited depth menus with keyboard + mouse support
-- **Icon Support** — Optional Nerd Font icons for visual scanning
+- **Icon Support** — Pluggable icon sources (Nerd Fonts, VS Code codicons, custom)
 - **Fast Search** — Token-based matching with BM25 ranking for 50k+ commands
 - **LRU Caching** — Efficient rendering with memoization
 - **Worker Thread** — Off-main-thread index building for large registries
@@ -114,6 +114,67 @@ If no icon is specified, KMS displays `•` (larger dot) as a fallback:
 ```
 
 Result: `•  [e]  Edit` in the menu.
+
+## Icon Sources & Themes (Phase 2a)
+
+KMS supports multiple icon sources, automatically trying each in priority order:
+
+1. **VS Code Codicons** (theme-aware) — built-in, respects light/dark theme
+2. **Nerd Fonts** (static) — 3000+ glyphs, requires font installation
+3. **Custom sources** — extensible via IconService registry (for plugins)
+
+### Using VS Code Codicons
+
+Codicons are built into VS Code and respect your theme automatically. No additional installation needed.
+
+Both formats are supported:
+
+```json
+{
+  "kms.bindings": [
+    { "key": "f", "name": "File", "icon": "$(folder-opened)" },
+    { "key": "f2", "name": "File Alt", "icon": "folder-opened" },
+    { "key": "e", "name": "Edit", "icon": "$(edit)" },
+    { "key": "d", "name": "Debug", "icon": "debug" }
+  ]
+}
+```
+
+Common codicons: `check`, `close`, `file`, `folder`, `folder-opened`, `git-branch`, `settings`, `debug`, `terminal`, `search`, `warning`, `error`, `info`, `question`.
+
+See [Codicons Reference](https://github.com/microsoft/vscode-codicons) for all available icons.
+
+### Using Nerd Fonts
+
+Install a Nerd Font and use glyphs directly (same as Phase 1):
+
+```json
+{
+  "kms.bindings": [
+    { "key": "f", "name": "File", "icon": "󰊢" },
+    { "key": "e", "name": "Edit", "icon": "󰏫" },
+    { "key": "d", "name": "Debug", "icon": "󰃤" }
+  ]
+}
+```
+
+See icon reference table above for common glyphs, or browse [Nerd Fonts Cheat Sheet](https://www.nerdfonts.com/cheat-sheet) for 10,000+ options.
+
+### Mixed Icon Sources
+
+You can mix codicons and Nerd Fonts in the same configuration:
+
+```json
+{
+  "kms.bindings": [
+    { "key": "f", "name": "File", "icon": "$(folder-opened)" },
+    { "key": "e", "name": "Edit", "icon": "󰏫" },
+    { "key": "s", "name": "Search", "icon": "$(search)" }
+  ]
+}
+```
+
+Resolution is automatic: KMS tries codicons first (theme-aware), then Nerd Fonts (static), then fallback to `•`.
 
 ## Usage
 
