@@ -176,6 +176,68 @@ You can mix codicons and Nerd Fonts in the same configuration:
 
 Resolution is automatic: KMS tries codicons first (theme-aware), then Nerd Fonts (static), then fallback to `•`.
 
+## Custom Icon Sources (Phase 3)
+
+Define your own icon sources in settings. Useful for emoji, custom symbols, or domain-specific icons:
+
+```json
+{
+  "kms.iconSources": [
+    {
+      "id": "my-emoji",
+      "name": "My Emoji Icons",
+      "priority": 3,
+      "icons": {
+        "happy": "😀",
+        "sad": "😢",
+        "fire": "🔥",
+        "rocket": "🚀"
+      }
+    },
+    {
+      "id": "my-symbols",
+      "name": "Custom Symbols",
+      "priority": 8,
+      "icons": {
+        "check": "✔",
+        "cross": "✖",
+        "arrow": "→",
+        "star": "⭐"
+      }
+    }
+  ]
+}
+```
+
+**How it works**:
+- `id`: Unique identifier for your source
+- `name`: Display name (shown in icon picker)
+- `priority`: Order in fallback chain (lower = tried first)
+  - Recommended: 1-4 for high priority, 5+ for lower
+  - Built-in: Codicons (5), Nerd Fonts (10)
+- `icons`: Map of icon names to icon strings (any UTF-8)
+
+**Example resolution chain with custom sources**:
+```
+User requests icon "happy"
+  → My Emoji (priority 3): Found! Returns 😀
+  
+User requests icon "check"
+  → My Emoji (priority 3): Not found
+  → My Symbols (priority 8): Found! Returns ✔
+  
+User requests icon "$(folder)"
+  → My Emoji (priority 3): Not found
+  → My Symbols (priority 8): Not found
+  → Codicons (priority 5): Found! Returns folder icon
+  
+User requests icon "unknown-xyz"
+  → All sources: Not found
+  → Fallback: Returns •
+```
+
+You can define multiple custom sources, each with their own priority and icon set.
+
 ## Finding & Testing Icons (Phase 2b)
 
 ### Option 1: Icon Picker (Interactive)

@@ -110,6 +110,25 @@
             "required": ["key", "name"]
           }
         },
+        "kms.iconSources": {
+          "type": "array",
+          "description": "Custom icon sources. Define your own icon mappings (emoji, custom symbols, etc). Sources are tried in priority order (lower number = first).",
+          "default": [],
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "description": "Unique identifier for this source (e.g., 'my-emoji', 'custom-icons')" },
+              "name": { "type": "string", "description": "Display name for this icon source" },
+              "priority": { "type": "number", "description": "Priority in fallback chain (lower = tried first). Codicons: 5, Nerd Fonts: 10. Use 1-4 for high priority, 11+ for lower." },
+              "icons": {
+                "type": "object",
+                "description": "Map of icon names to icon strings (emoji, symbols, glyphs, etc)",
+                "additionalProperties": { "type": "string" }
+              }
+            },
+            "required": ["id", "name", "priority", "icons"]
+          }
+        },
         "kms.menus": {
           "type": "object",
           "description": "Named which-key menus. Each key is a menu ID, value has 'title' and 'bindings'. Use with keybindings: { \"command\": \"kms.whichKey\", \"args\": { \"menu\": \"myMenu\" } }",
