@@ -15,6 +15,9 @@ dist/
 coverage/
 .nyc_output/
 
+# VS Code test runtime (downloaded VS Code binaries)
+.vscode-test/
+
 # IDE
 .vscode/launch.json
 .vscode/tasks.json
