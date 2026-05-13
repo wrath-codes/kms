@@ -8,6 +8,7 @@ import { RenderModelServiceLive } from "../services/RenderModelService"
 import { DispatchQueueServiceLive } from "../services/DispatchQueue"
 import { IconServiceLive } from "../services/IconService"
 import { WhichKeyMenuLive } from "../ui/whichKeyMenu"
+import { IconPickerUILive } from "../ui/iconPicker"
 
 const ServicesLayer = Layer.mergeAll(
   ConfigServiceLive,
@@ -25,7 +26,10 @@ const CoreLayer = Layer.mergeAll(ServicesLayer, SearchLayer)
 
 const MenuDeps = Layer.mergeAll(ContextServiceLive, CommandServiceLive, IconServiceLive)
 
+const PickerDeps = Layer.mergeAll(IconServiceLive)
+
 export const MainLayer = Layer.mergeAll(
   CoreLayer,
   WhichKeyMenuLive.pipe(Layer.provide(MenuDeps)),
+  IconPickerUILive.pipe(Layer.provide(PickerDeps)),
 )

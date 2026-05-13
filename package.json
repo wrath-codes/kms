@@ -5,10 +5,21 @@
   "main": "./out/extension.js",
   "activationEvents": [],
   "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": "settings.json",
+        "url": "./schemas/kms-bindings-schema.json"
+      }
+    ],
     "commands": [
       {
         "command": "kms.whichKey",
         "title": "KMS: Which Key"
+      },
+      {
+        "command": "kms.pickIcon",
+        "title": "KMS: Pick Icon for Configuration",
+        "category": "KMS"
       }
     ],
     "keybindings": [

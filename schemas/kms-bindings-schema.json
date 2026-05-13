@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KMS Bindings Configuration",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "key": {
+        "type": "string",
+        "description": "Single character key binding",
+        "pattern": "^[a-zA-Z0-9]$"
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name for this binding"
+      },
+      "icon": {
+        "type": "string",
+        "description": "Icon identifier: Nerd Font glyph, VS Code codicon $(name) or name, or custom",
+        "examples": ["󰊢", "$(folder-opened)", "check"]
+      },
+      "command": {
+        "type": "string",
+        "description": "Command ID to execute (e.g., 'workbench.action.files.save')"
+      },
+      "args": {
+        "type": ["array", "object"],
+        "description": "Optional arguments to pass to the command"
+      },
+      "when": {
+        "type": "string",
+        "description": "Condition when this binding is available"
+      },
+      "bindings": {
+        "type": "array",
+        "description": "Nested bindings (submenu)",
+        "$ref": "#"
+      }
+    },
+    "required": ["key", "name"],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "bindings": {
+              "type": "array"
+            }
+          },
+          "required": ["bindings"]
+        },
+        "then": {
+          "not": {
+            "required": ["command"]
+          }
+        },
+        "else": {
+          "required": ["command"]
+        }
+      }
+    ]
+  }
+}

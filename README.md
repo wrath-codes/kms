@@ -176,6 +176,52 @@ You can mix codicons and Nerd Fonts in the same configuration:
 
 Resolution is automatic: KMS tries codicons first (theme-aware), then Nerd Fonts (static), then fallback to `•`.
 
+## Finding & Testing Icons (Phase 2b)
+
+### Option 1: Icon Picker (Interactive)
+
+Run command **KMS: Pick Icon for Configuration** (`kms.pickIcon`):
+
+1. Opens searchable grid of all available icons
+2. Search by name (e.g., "folder", "check")
+3. Preview icon in list
+4. Click or press Enter to copy icon to clipboard
+5. Paste into your `kms.bindings` or `kms.menus` config
+
+Example workflow:
+```
+Cmd+Shift+P → KMS: Pick Icon
+Type "check" → Select "$(check) check"
+Press Enter → Icon copied to clipboard
+Paste into: { "icon": "$(check)" }
+```
+
+### Option 2: Manual Lookup
+
+**Codicons**: Browse [VS Code Codicons Reference](https://github.com/microsoft/vscode-codicons) for full list.  
+**Nerd Fonts**: Browse [Nerd Fonts Cheat Sheet](https://www.nerdfonts.com/cheat-sheet) for 3000+ glyphs.
+
+### Configuration Validation
+
+VS Code validates your `kms.bindings` and `kms.menus` settings against a JSON schema. Invalid icon names will show inline errors:
+
+```json
+{
+  "key": "f",
+  "name": "File",
+  "icon": "$(invalid)"  // ❌ Error: Unknown codicon (if icon not in registry)
+}
+```
+
+Check the **Problems** panel (Ctrl+Shift+M) for validation details. Validation helps catch typos early.
+
+**Schema features**:
+- Key must be single character (a-z, A-Z, 0-9)
+- Name is required
+- Icon is optional (falls back to `•` if omitted)
+- Groups must have nested `bindings`, not `command`
+- Leaves must have `command`, not `bindings`
+
 ## Usage
 
 1. Run command **`KMS: Which Key`** (`kms.whichKey`)

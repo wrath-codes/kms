@@ -2,6 +2,7 @@ import * as vscode from "vscode"
 import { Effect, ManagedRuntime } from "effect"
 import { MainLayer } from "./layers/MainLayer"
 import { WhichKeyMenu } from "./ui/whichKeyMenu"
+import { IconPickerUI } from "./ui/iconPicker"
 import { initializeDefaultIconSources } from "./services/iconSources"
 
 // Log error with consistent formatting
@@ -32,6 +33,26 @@ export async function activate(context: vscode.ExtensionContext) {
           yield* menu.show(args?.menu)
         })
       ).catch((e) => logError("whichKey", e))
+    }),
+  )
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("kms.pickIcon", () => {
+      if (!runtime) return
+      runtime.runPromise(
+        Effect.gen(function* () {
+          const picker = yield* IconPickerUI
+          const icon = yield* picker.show()
+          if (icon) {
+            yield* vscode.env.clipboard.writeText(icon)
+            yield* Effect.promise(() =>
+              vscode.window.showInformationMessage(
+                `✓ Icon copied to clipboard: ${icon}\nPaste into your kms.bindings config.`
+              )
+            )
+          }
+        })
+      ).catch((e) => logError("pickIcon", e))
     }),
   )
 
