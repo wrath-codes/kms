@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest"
-import { buildIconList } from "../../ui/iconPicker"
+import { describe, it, expect, vi } from "vitest"
+import { Effect, ManagedRuntime } from "effect"
+import { buildIconList, IconPickerUI } from "../../ui/iconPicker"
+import { MainLayer } from "../../layers/MainLayer"
+import { initializeDefaultIconSources } from "../../services/iconSources"
+import * as vscodeShim from "../shims/vscodeShim"
 
 describe("IconPicker", () => {
   describe("buildIconList", () => {
@@ -65,5 +69,30 @@ describe("IconPicker", () => {
       expect(check?.detail).toContain("$(check)")
       expect(check?.detail).toContain("check")
     })
+  })
+
+  it("shows icons initialized through the main runtime", async () => {
+    const runtime = ManagedRuntime.make(MainLayer)
+
+    try {
+      await runtime.runPromise(initializeDefaultIconSources)
+
+      const result = runtime.runPromise(
+        Effect.gen(function* () {
+          const picker = yield* IconPickerUI
+          return yield* picker.show()
+        })
+      )
+
+      await vi.waitFor(() => expect(vscodeShim.window.lastQuickPick).not.toBeNull())
+
+      const quickPick = vscodeShim.window.lastQuickPick!
+      expect(quickPick.items.length).toBeGreaterThan(0)
+
+      quickPick._onDidHideEmitter.fire(undefined)
+      await expect(result).resolves.toBeUndefined()
+    } finally {
+      await runtime.dispose()
+    }
   })
 })

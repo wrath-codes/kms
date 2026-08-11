@@ -7,22 +7,21 @@
       "command": "bun",
       "args": ["run", "watch"],
       "isBackground": true,
-      "problemMatcher": "$tsc-watch",
+      "problemMatcher": [],
       "presentation": {
         "reveal": "never"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
       }
     },
     {
       "label": "bun: compile",
       "type": "shell",
       "command": "bun",
-      "args": ["run", "build"],
-      "problemMatcher": "$tsc",
-      "group": "build"
+      "args": ["run", "compile"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }

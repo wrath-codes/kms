@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { Effect, ManagedRuntime } from "effect"
+import { Effect, Layer, ManagedRuntime } from "effect"
 import { MainLayer } from "./layers/MainLayer"
 import { WhichKeyMenu } from "./ui/whichKeyMenu"
 import { IconPickerUI } from "./ui/iconPicker"
@@ -12,8 +12,8 @@ const logError = (context: string, error: unknown) => {
 }
 
 let runtime: ManagedRuntime.ManagedRuntime<
-  ManagedRuntime.ManagedRuntime.Context<typeof MainLayer>,
-  never
+  Layer.Layer.Success<typeof MainLayer>,
+  Layer.Layer.Error<typeof MainLayer>
 > | null = null
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -22,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
   runtime = ManagedRuntime.make(MainLayer)
 
   // Initialize icon sources (codicons, nerd fonts, etc.)
-  runtime.runPromise(initializeDefaultIconSources).catch((e) => logError("initializeIconSources", e))
+  await runtime.runPromise(initializeDefaultIconSources)
 
   context.subscriptions.push(
     vscode.commands.registerCommand("kms.whichKey", (args?: { menu?: string }) => {
@@ -44,10 +44,12 @@ export async function activate(context: vscode.ExtensionContext) {
           const picker = yield* IconPickerUI
           const icon = yield* picker.show()
           if (icon) {
-            yield* vscode.env.clipboard.writeText(icon)
+            yield* Effect.promise(() => Promise.resolve(vscode.env.clipboard.writeText(icon)))
             yield* Effect.promise(() =>
-              vscode.window.showInformationMessage(
-                `✓ Icon copied to clipboard: ${icon}\nPaste into your kms.bindings config.`
+              Promise.resolve(
+                vscode.window.showInformationMessage(
+                  `✓ Icon copied to clipboard: ${icon}\nPaste into your kms.bindings config.`
+                )
               )
             )
           }

@@ -4,6 +4,7 @@ import { BindingGroup, BindingLeaf, type BindingNode } from "../domain/types"
 import { ContextService } from "../services/ContextService"
 import { CommandService } from "../services/CommandService"
 import { IconService } from "../services/IconService"
+import { VscodeError } from "../services/VscodeEffect"
 
 // ---------------------------------------------------------------------------
 // QuickPick item carrying a binding node
@@ -77,7 +78,7 @@ const renderLevel = (
 export class WhichKeyMenu extends Context.Tag("WhichKeyMenu")<
   WhichKeyMenu,
   {
-    readonly show: (menuId?: string) => Effect.Effect<void>
+    readonly show: (menuId?: string) => Effect.Effect<void, VscodeError>
   }
 >() {}
 
@@ -122,7 +123,7 @@ export const WhichKeyMenuLive = Layer.effect(
 
         // Navigation state: stack for backspace undo
         const stack: { title: string; nodes: readonly BindingNode[] }[] = []
-        let currentNodes = rootBindings
+        let currentNodes: readonly BindingNode[] = rootBindings
         let currentTitle = menuTitle
 
         const qp = vscode.window.createQuickPick<WhichKeyItem>()

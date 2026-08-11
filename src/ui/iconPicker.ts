@@ -178,21 +178,39 @@ export const IconPickerUILive = Layer.effect(
           quickPick.matchOnDescription = true
           quickPick.matchOnDetail = true
 
-          return new Promise((resolve) => {
-            quickPick.onDidAccept(() => {
+          return yield* Effect.async<string | undefined>((resume) => {
+            let settled = false
+            let acceptDisposable: vscode.Disposable | undefined
+            let hideDisposable: vscode.Disposable | undefined
+
+            const cleanup = (hide: boolean) => {
+              acceptDisposable?.dispose()
+              hideDisposable?.dispose()
+              if (hide) quickPick.hide()
+              quickPick.dispose()
+            }
+
+            const finish = (value: string | undefined, hide: boolean) => {
+              if (settled) return
+              settled = true
+              cleanup(hide)
+              resume(Effect.succeed(value))
+            }
+
+            acceptDisposable = quickPick.onDidAccept(() => {
               const selected = quickPick.selectedItems[0]
-              if (selected) {
-                resolve(selected.value)
-              }
-              quickPick.hide()
+              const pasted = quickPick.value.trim()
+              finish(selected?.value ?? (pasted || undefined), true)
             })
 
-            quickPick.onDidHide(() => {
-              resolve(undefined)
-              quickPick.dispose()
-            })
+            hideDisposable = quickPick.onDidHide(() => finish(undefined, false))
 
             quickPick.show()
+
+            return Effect.sync(() => {
+              settled = true
+              cleanup(true)
+            })
           })
         }),
     }

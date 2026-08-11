@@ -82,6 +82,7 @@ Both should pass.
 ## Common Commands
 
 ```bash
+bun run dev              # Watch changes; press F5 to launch extension host
 bun run compile          # Build extension
 bun run watch            # Watch & rebuild on changes
 bun run test:unit        # Fast unit tests

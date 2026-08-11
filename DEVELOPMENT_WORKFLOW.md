@@ -21,13 +21,15 @@ Daily commands, debugging tips, and development patterns.
 
 ```bash
 # Terminal 1: Watch & rebuild on changes
-bun run watch
+bun run dev
 
 # Terminal 2: Run tests on changes
 bun run test:unit:watch
 
-# Terminal 3: Debug in VS Code
-# Press F5 to launch extension with debugger
+# In VS Code: select "Run Extension" and press F5
+# This launches the extension through VS Code's extensionHost debugger
+
+# After changing code, press Cmd+R in the Extension Development Host
 ```
 
 This gives you:

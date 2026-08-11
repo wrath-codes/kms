@@ -10,8 +10,7 @@ import { IconServiceLive } from "../services/IconService"
 import { WhichKeyMenuLive } from "../ui/whichKeyMenu"
 import { IconPickerUILive } from "../ui/iconPicker"
 
-const ServicesLayer = Layer.mergeAll(
-  ConfigServiceLive,
+const BaseLayer = Layer.mergeAll(
   ContextServiceLive,
   RegistryServiceLive,
   CommandServiceLive,
@@ -20,16 +19,11 @@ const ServicesLayer = Layer.mergeAll(
   IconServiceLive,
 )
 
-const SearchLayer = SearchServiceLive.pipe(Layer.provide(RegistryServiceLive))
-
-const CoreLayer = Layer.mergeAll(ServicesLayer, SearchLayer)
-
-const MenuDeps = Layer.mergeAll(ContextServiceLive, CommandServiceLive, IconServiceLive)
-
-const PickerDeps = Layer.mergeAll(IconServiceLive)
-
-export const MainLayer = Layer.mergeAll(
-  CoreLayer,
-  WhichKeyMenuLive.pipe(Layer.provide(MenuDeps)),
-  IconPickerUILive.pipe(Layer.provide(PickerDeps)),
+const DependentLayer = Layer.mergeAll(
+  ConfigServiceLive,
+  SearchServiceLive,
+  WhichKeyMenuLive,
+  IconPickerUILive,
 )
+
+export const MainLayer = DependentLayer.pipe(Layer.provideMerge(BaseLayer))

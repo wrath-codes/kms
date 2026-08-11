@@ -147,6 +147,7 @@
   },
   "scripts": {
     "compile": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=vscode --sourcemap=linked && bun build src/worker/indexWorker.ts --outdir out/worker --target=node --format=cjs --sourcemap=linked",
+    "dev": "bun run watch",
     "watch": "bun build src/extension.ts --outdir out --target=node --format=cjs --external=vscode --sourcemap=inline --watch",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",

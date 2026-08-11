@@ -19,6 +19,7 @@ export const DispatchQueueServiceLive = Layer.scoped(
   DispatchQueueService,
   Effect.gen(function* () {
     const queue = yield* Queue.bounded<DispatchAction>(64)
+    const scope = yield* Effect.scope
 
     return {
       dispatch: (action: DispatchAction) =>
@@ -28,7 +29,7 @@ export const DispatchQueueServiceLive = Layer.scoped(
           yield* Queue.take(queue).pipe(
             Effect.flatMap(handler),
             Effect.forever,
-            Effect.forkScoped
+            Effect.forkIn(scope)
           )
         }).pipe(Effect.asVoid),
     }

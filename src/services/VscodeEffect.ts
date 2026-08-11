@@ -14,7 +14,7 @@ export class CommandError extends Data.TaggedError("CommandError")<{
 
 export const fromVscode = <A>(op: string, f: () => Thenable<A>): Effect.Effect<A, VscodeError> =>
   Effect.tryPromise({
-    try: () => f() as Promise<A>,
+    try: () => Promise.resolve(f()),
     catch: (cause) => new VscodeError({ op, cause }),
   });
 
