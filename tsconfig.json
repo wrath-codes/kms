@@ -13,10 +13,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
+    "paths": {"@*": ["./*"]},
     "types": ["node", "vscode"]
   },
   "include": ["src/**/*"],
